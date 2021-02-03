@@ -12,16 +12,14 @@ namespace UniversityWebApp.Helpers
     {
         public static HtmlString Select<T, TVal>(this IHtmlHelper html, IEnumerable<T> xs, string valName, string txtName, TVal selected)
         {
-            var prop = typeof(T).GetProperty(valName);
-            IEnumerable<TVal> values = xs.Select(x => (TVal)prop.GetValue(x));
+            var val = typeof(T).GetProperty(valName);
+            var txt = typeof(T).GetProperty(txtName);
             StringBuilder sb = new();
-            sb.Append($"<select id=\"{ nameof(T) + valName }\" name=\"{ txtName }\">");
-            foreach(TVal val in values)
+            sb.Append($"<select>");
+            foreach(T x in xs)
             {
-                sb.Append("<option ");
-                if (val.Equals(selected))
-                    sb.Append("selected");
-                sb.Append($">{val}</option>");
+                sb.Append($"<option value=\"{val.GetValue(x)}");
+                sb.Append($">{txt.GetValue(x)}</option>");
             }
             sb.Append("</select>");
             return new HtmlString(sb.ToString());
