@@ -135,21 +135,20 @@ namespace UniversityWebApp.Controllers
         [HttpPost, ActionName("Select")]
         public IActionResult ConfirmSelect(SelectDisciplineViewModel viewModel)
         {
-            Student s = _context.Students.Find(viewModel.StudentId);
-            _context.Entry(s).Collection("Disciplines");
-            if (s.Disciplines == null)
-                s.Disciplines = new();
-            string command = $"Delete from [DisciplineStudent] WHERE StudentsId = {s.Id}";
-            _context.Database.ExecuteSqlRaw(command);           
-            foreach (DisciplineFilter filter in viewModel.Filters)
+            if (ModelState.IsValid)
             {
-                if (filter.Selected == true)
+                Student s = _context.Students.Include(s => s.Disciplines).SingleOrDefault(s => s.Id == viewModel.StudentId);
+                s.Disciplines.RemoveAll(d => true);
+                foreach (DisciplineFilter filter in viewModel.Filters)
                 {
-                    Discipline disc = _context.Disciplines.Find(filter.Id);
-                    s.Disciplines.Add(disc);
+                    if (filter.Selected == true)
+                    {
+                        Discipline disc = _context.Disciplines.Find(filter.Id);
+                        s.Disciplines.Add(disc);
+                    }
                 }
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
             return View("Index", _context.Students);
         }
 

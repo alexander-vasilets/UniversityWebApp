@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UniversityWebApp.Models.Validations;
 
 namespace UniversityWebApp.Models
 {
@@ -16,6 +17,7 @@ namespace UniversityWebApp.Models
     {
         public int StudentId { get; set; }
         public string StudentName { get; set; }
+        [DisciplineChoiceValidation(3)]
         public List<DisciplineFilter> Filters { get; set; }
     }
     public class DisciplineFilter
